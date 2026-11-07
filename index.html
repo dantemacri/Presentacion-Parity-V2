@@ -30,9 +30,17 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
       </button>
       <figure class="slide-frame" id="slide-frame">
-        <img class="slide-image" id="slide-image" src="slides/slide-01.png" alt="Diapositiva 1 de 15: portada de Parity" draggable="false">
-        <figcaption class="sr-only" id="slide-caption" aria-live="polite">Diapositiva 1 de 15: Portada</figcaption>
+        <img class="slide-image" id="slide-image" src="slides/slide-01.png" alt="Diapositiva 1 de 16: portada de Parity" draggable="false">
+        <video class="slide-video" id="slide-video" controls playsinline preload="metadata" aria-label="Video de demostración de Parity">
+          <source src="demo-parity.mp4" type="video/mp4">
+          Tu navegador no puede reproducir este video.
+        </video>
+        <div class="demo-card-label-cover" aria-hidden="true"></div>
+        <p class="demo-footer-cover">Video de demostración</p>
+        <button class="video-fullscreen" id="video-fullscreen" type="button">Ver video en pantalla completa</button>
+        <figcaption class="sr-only" id="slide-caption" aria-live="polite">Diapositiva 1 de 16: Portada</figcaption>
         <p class="image-error" id="image-error" role="alert" hidden>No se pudo cargar esta diapositiva. Comprobá que la carpeta <code>slides</code> esté junto a <code>index.html</code>.</p>
+        <p class="image-error" id="video-error" role="alert" hidden>No se pudo cargar o reproducir el video. Comprobá que <code>demo-parity.mp4</code> esté junto a <code>index.html</code> y que tu navegador admita su formato.</p>
       </figure>
       <button class="side-nav side-nav--next" id="next" type="button" aria-label="Diapositiva siguiente" title="Siguiente (→)">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
@@ -41,9 +49,9 @@
 
     <footer class="bottombar">
       <div class="slide-count" aria-label="Número de diapositiva">
-        <span id="current-slide">01</span><span class="count-divider">/</span><span id="total-slides">15</span>
+        <span id="current-slide">01</span><span class="count-divider">/</span><span id="total-slides">16</span>
       </div>
-      <div class="progress-track" role="progressbar" aria-label="Progreso de la presentación" aria-valuemin="1" aria-valuemax="15" aria-valuenow="1" id="progress">
+      <div class="progress-track" role="progressbar" aria-label="Progreso de la presentación" aria-valuemin="1" aria-valuemax="16" aria-valuenow="1" id="progress">
         <span id="progress-bar"></span>
       </div>
       <div class="footer-hint"><span>Usá las flechas para navegar</span><kbd>←</kbd><kbd>→</kbd></div>

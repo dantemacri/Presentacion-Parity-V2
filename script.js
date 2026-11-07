@@ -10,6 +10,7 @@
     "Alcance",
     "Cómo lo construimos",
     "Resultados",
+    "Stack tecnológico",
     "Arquitectura",
     "Viabilidad",
     "Cierre",
@@ -18,9 +19,11 @@
   ];
 
   const image = document.querySelector("#slide-image");
+  const video = document.querySelector("#slide-video");
   const caption = document.querySelector("#slide-caption");
   const frame = document.querySelector("#slide-frame");
   const errorMessage = document.querySelector("#image-error");
+  const videoErrorMessage = document.querySelector("#video-error");
   const currentLabel = document.querySelector("#current-slide");
   const totalLabel = document.querySelector("#total-slides");
   const progress = document.querySelector("#progress");
@@ -41,6 +44,14 @@
     return Number.isInteger(requested) && requested >= 1 && requested <= slides.length ? requested : 1;
   }
 
+  function slideImageSource(number) {
+    const imageNumber = number === 9 ? 9 : number === 10 ? 11 : number === 11 ? 10 : number;
+    const source = `slides/slide-${String(imageNumber).padStart(2, "0")}.png`;
+    if (imageNumber === 10) return `${source}?v=7`;
+    if (imageNumber === 11) return `${source}?v=8`;
+    return source;
+  }
+
   function renderIndex() {
     const fragment = document.createDocumentFragment();
     slides.forEach((title, index) => {
@@ -50,7 +61,7 @@
       button.type = "button";
       button.dataset.slide = String(number);
       button.setAttribute("aria-label", `Ir a la diapositiva ${number}: ${title}`);
-      button.innerHTML = `<img src="slides/slide-${String(number).padStart(2, "0")}.png" alt="" loading="lazy"><span><b>${String(number).padStart(2, "0")}</b>${title}</span>`;
+      button.innerHTML = `<img src="${slideImageSource(number)}" alt="" loading="lazy"><span><b>${String(number).padStart(2, "0")}</b>${title}</span>`;
       fragment.append(button);
     });
     grid.replaceChildren(fragment);
@@ -60,8 +71,11 @@
     current = Math.min(slides.length, Math.max(1, number));
     const numberText = String(current).padStart(2, "0");
     const title = slides[current - 1];
-    image.src = `slides/slide-${numberText}.png`;
+    const isVideoSlide = current === 7;
+    image.src = slideImageSource(current);
     image.alt = `Diapositiva ${current} de ${slides.length}: ${title}`;
+    frame.classList.toggle("is-video", isVideoSlide);
+    if (!isVideoSlide) video.pause();
     caption.textContent = `Diapositiva ${current} de ${slides.length}: ${title}`;
     currentLabel.textContent = numberText;
     progressBar.style.width = `${(current / slides.length) * 100}%`;
@@ -74,6 +88,7 @@
       else button.removeAttribute("aria-current");
     });
     errorMessage.hidden = true;
+    videoErrorMessage.hidden = true;
     if (window.location.hash !== `#slide-${current}`) {
       window.history.replaceState(null, "", `#slide-${current}`);
     }
@@ -92,6 +107,12 @@
   });
   image.addEventListener("load", () => {
     errorMessage.hidden = true;
+  });
+  video.addEventListener("error", () => {
+    videoErrorMessage.hidden = false;
+  });
+  video.addEventListener("loadeddata", () => {
+    videoErrorMessage.hidden = true;
   });
   previous.addEventListener("click", () => moveBy(-1));
   next.addEventListener("click", () => moveBy(1));
@@ -114,6 +135,13 @@
       status.textContent = `No se pudo activar la pantalla completa: ${error.message}`;
     }
   });
+  document.querySelector("#video-fullscreen").addEventListener("click", async () => {
+    try {
+      await video.requestFullscreen();
+    } catch (error) {
+      status.textContent = `No se pudo activar la pantalla completa del video: ${error.message}`;
+    }
+  });
 
   window.addEventListener("hashchange", () => showSlide(readSlideFromHash(), false));
   window.addEventListener("keydown", (event) => {
@@ -121,6 +149,7 @@
       if (event.key === "Escape") dialog.close();
       return;
     }
+    if (event.target === video) return;
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
       event.preventDefault();
@@ -141,9 +170,11 @@
 
   let touchStartX = null;
   frame.addEventListener("touchstart", (event) => {
+    if (event.target === video) return;
     touchStartX = event.changedTouches[0].clientX;
   }, { passive: true });
   frame.addEventListener("touchend", (event) => {
+    if (event.target === video) return;
     if (touchStartX === null) return;
     const distance = event.changedTouches[0].clientX - touchStartX;
     if (Math.abs(distance) > 55) moveBy(distance < 0 ? 1 : -1);
